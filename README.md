@@ -30,5 +30,6 @@ Run in the command line as: `python CDX.py`
 staticPages.py
 --------------
 + An example of the script we are using to make static pages while updating Web Archives records from the Archive-It and Wayback CDX API
++ collectionList.xslx is also included as a sample of the spreadsheet we are used to provide the data for this script
 
 [Wayback CDX API Documentation](https://github.com/internetarchive/wayback/tree/master/wayback-cdx-server)
