@@ -172,18 +172,18 @@ for collection in collections:
                                 dsc.append(series)
                         else:
                                 match = False
-                                for series in fa.find("archdesc/dsc"):
-                                        if series.tag == "c01":
+                                for series in fa.find("archdesc/dsc/c01[@otherlevel='processed']"):
+                                        if series.tag == "c02":
                                                 if series.attrib["id"] == webArchSeries:
                                                         match = True
                                 if match == False:
-                                        newSeries = ET.Element("c01")
+                                        newSeries = ET.Element("c02")
                                         newSeries.set("id", webArchSeries)
-                                        fa.find("archdesc/dsc").append(newSeries)
+                                        fa.find("archdesc/dsc/c01[@otherlevel='processed']").append(newSeries)
 
                         #iterate though EAD and find matching series
-                        for series in fa.find("archdesc/dsc"):
-                                if series.tag == "c01":
+                        for series in fa.find("archdesc/dsc/c01[@otherlevel='processed']"):
+                                if series.tag == "c02":
                                         if series.attrib["id"] == webArchSeries:
                                                 #for debugging:
                                                 print "found series"
@@ -195,7 +195,7 @@ for collection in collections:
                                                 #find or create <unitid>
                                                 if series.find("did/unitid") is None:
                                                         unitid = ET.Element("unitid")
-                                                        unitid.text = str(collection[10])
+                                                        unitid.text = "series" + str(collection[10])
                                                         series.find("did").insert(0, unitid)
                                                 #update <unittitle>
                                                 if series.find("did/unittitle") is None:
@@ -240,22 +240,22 @@ for collection in collections:
                                                         acqP2 = ET.SubElement(acqinfo, "p")
                                                         #default <acqinfo> text
                                                         acqP1.text = "Web crawling is managed through the Internet Archive's Archive-It service. This series includes links to both the university's collection and the Internet Archive's public collection."
-                                                        #Albany.edu <acqinfo> text
+                                                        #uwm.edu <acqinfo> text
                                                         if archiveItCollection == "3368":
                                                                 acqP2.text = "Web records from UWM are collected on a semi-annual basis. Crawls of the UWM Web Site may be performed at more frequent intervals in cases of major events, significant additions or changes to the UWM Website or the websites of schools and colleges, etc. Social Media feeds are crawled on an as-requested basis."
                                                         series.insert(1, acqinfo)
                                                         
                                                 #remove existing web archives links
                                                 for oldc02 in series:
-                                                        if oldc02.tag == "c02":
+                                                        if oldc02.tag == "c03":
                                                                 series.remove(oldc02)
                                                 #variable to make new semantic IDs
                                                 idCount = 0
                                                 
-                                                #Make Archive-it <c02>
+                                                #Make Archive-it <c03>
                                                 if archiveIt == True:
                                                         idCount = idCount + 1
-                                                        aiFile = ET.Element("c02")
+                                                        aiFile = ET.Element("c03")
                                                         aiFile.set("id", webArchSeries + "_" + str(idCount))
                                                         aiDid = ET.SubElement(aiFile, "did")
                                                         aiContainer = ET.SubElement(aiDid, "container")
@@ -277,10 +277,10 @@ for collection in collections:
                                                         
                                                         
                                                 
-                                                #add general Wayback <c02>
+                                                #add general Wayback <c03>
                                                 if wayback == True:
                                                         idCount = idCount + 1
-                                                        wayFile = ET.Element("c02")
+                                                        wayFile = ET.Element("c03")
                                                         wayFile.set("id", webArchSeries + "_" + str(idCount))
                                                         wayDid = ET.SubElement(wayFile, "did")
                                                         wayContainer = ET.SubElement(wayDid, "container")
