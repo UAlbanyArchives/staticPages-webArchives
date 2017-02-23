@@ -141,7 +141,7 @@ for collection in collections:
                         fa = faInput.getroot()
                         
                         #Get Web Archvies Series Semantic ID
-                        webArchSeries = str(collection[1]) + "-" + str(collection[10])
+                        webArchSeries = "web series" + str(collection[10])
 
                         #Add Web Archives not in <phystech>
                         if fa.find("archdesc/descgrp/phystech") is None:
@@ -151,14 +151,15 @@ for collection in collections:
                                 phystechP.text = "The records in the Web Archives Series were collected using the Archive-It Web Archiving tool."
                                 fa.find("archdesc/descgrp").insert(1, phystech)
                                 print "New Phystech element created"
-                        elif fa.xpath('//p[@id="webarch"]') is None:
+                        elif fa.find('archdesc/descgrp/phystech/p[@id="webarch"]') is None:
                                 phystech = fa.find("archdesc/descgrp/phystech")
                                 phystechP = ET.SubElement(phystech, "p")
                                 phystechP.set("id", "webarch")
                                 phystechP.text = "The records in the Web Archives Series were collected using the Archive-It Web Archiving tool."
                                 print "Web Archives paragraph added to phystech"
                         else:
-                                print "Web Archives paragraph already exists!"
+                                print "Web Archives present and accounted for"
+                        
                         print "Series " + webArchSeries
                         
                         #find or create Web Archvies Series
@@ -185,7 +186,7 @@ for collection in collections:
                                 if series.tag == "c01":
                                         if series.attrib["id"] == webArchSeries:
                                                 #for debugging:
-                                                #print "found series"
+                                                print "found series"
                                                 series.set("level", "series")\
                                                 #find or create <did>
                                                 if series.find("did") is None:
@@ -199,7 +200,7 @@ for collection in collections:
                                                 #update <unittitle>
                                                 if series.find("did/unittitle") is None:
                                                         unittitle = ET.Element("unittitle")
-                                                        unittitle.text = "Web Archives"
+                                                        unittitle.text =str(collection[10]) + ". Web Archives"
                                                         series.find("did").insert(1, unittitle)
                                                 #remove existing <unitdate>s
                                                 if not series.find("did/unitdate") is None:
@@ -207,8 +208,6 @@ for collection in collections:
                                                 #Add new <unitdate>
                                                 unitdate = ET.Element("unitdate")
                                                 unitdate.set("type", "inclusive")
-                                                unitdate.set("era", "ce")
-                                                unitdate.set("calendar", "gregorian")
                                                 unitdate.set("normal", seriesNormal)
                                                 unitdate.text = seriesDacs
                                                 series.find("did").insert(2, unitdate)
@@ -229,7 +228,7 @@ for collection in collections:
                                                 if series.find("phystech") is None:
                                                         phystech = ET.Element("phystech")
                                                         phystechP = ET.SubElement(phystech, "p")
-                                                        phystechP.text = "Web Archives"
+                                                        phystechP.text = "Web Archives collected by the Internet Archives Wayback Machine and Archive-It Web Harvesting Tools."
                                                         series.insert(1, phystech)
                                                 #remove existing <acqinfo>
                                                 if not series.find("acqinfo") is None:
@@ -240,13 +239,10 @@ for collection in collections:
                                                         acqP1 = ET.SubElement(acqinfo, "p")
                                                         acqP2 = ET.SubElement(acqinfo, "p")
                                                         #default <acqinfo> text
-                                                        acqP1.text = "Web crawling is managed through the Internet Archive's Archive-It service. This page includes links to both the university's collection and the Internet Archive's public collection."
+                                                        acqP1.text = "Web crawling is managed through the Internet Archive's Archive-It service. This series includes links to both the university's collection and the Internet Archive's public collection."
                                                         #Albany.edu <acqinfo> text
-                                                        if archiveItCollection == "3308":
-                                                                acqP2.text = "Surface-level crawling of www.albany.edu is performed daily which should includes most top-level webpages. Separate targeted crawls of every albany.edu subdomain are performed monthly to attempt to gather all content. This includes: www.albany.edu, www.rna.albany.edu, www.ctg.albany.edu, www.ualbanysports.com, www.albany.edu/rockefeller, www.albany.edu/cela, www.albany.edu/asrc, m.albany.edu,	library.albany.edu,	events.albany.edu,	cstar.cestm.albany.edu, csda.albany.edu, and alumni.albany.edu"
-                                                        #NYCLU <acqinfo> text
-                                                        elif archiveItCollection == "7081":
-                                                                acqP2.text = "The following seeds are crawled monthly: www.nyclu.org, www.facebook.com/NYCLU, www.twitter.com/NYCLU, and en.wikipedia.org/wiki/New_York_Civil_Liberties_Union. The domains en.wikipedia.org, twitter.com, and upload.wikimedia.org are subjected to a 1,000 document limit."
+                                                        if archiveItCollection == "3368":
+                                                                acqP2.text = "Web records from UWM are collected on a semi-annual basis. Crawls of the UWM Web Site may be performed at more frequent intervals in cases of major events, significant additions or changes to the UWM Website or the websites of schools and colleges, etc. Social Media feeds are crawled on an as-requested basis."
                                                         series.insert(1, acqinfo)
                                                         
                                                 #remove existing web archives links
@@ -268,8 +264,6 @@ for collection in collections:
                                                         aiUnittitle = ET.SubElement(aiDid, "unittitle")
                                                         aiUnittitle.text = webUrl + " - University Archives collection"
                                                         aiUnitdate = ET.SubElement(aiDid, "unitdate")
-                                                        aiUnitdate.set("calendar", "gregorian")
-                                                        aiUnitdate.set("era", "ce")
                                                         firstDacs, firstNormal = makeDate(firstDate)
                                                         lastDacs, lastNormal = makeDate(lastDate)
                                                         aiUnitdate.set("normal", firstNormal + "/" + lastNormal)
@@ -295,8 +289,6 @@ for collection in collections:
                                                         wayUnittitle = ET.SubElement(wayDid, "unittitle")
                                                         wayUnittitle.text = webUrl + " - Internet Archive collection"
                                                         wayUnitdate = ET.SubElement(wayDid, "unitdate")
-                                                        wayUnitdate.set("calendar", "gregorian")
-                                                        wayUnitdate.set("era", "ce")
                                                         firstDacs, firstNormal = makeDate(wayFirstDate)
                                                         lastDacs, lastNormal = makeDate(wayLastDate)
                                                         wayUnitdate.set("normal", firstNormal + "/" + lastNormal)
