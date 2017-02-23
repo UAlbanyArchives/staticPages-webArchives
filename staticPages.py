@@ -141,17 +141,16 @@ for collection in collections:
                         fa = faInput.getroot()
                         
                         #Get Web Archvies Series Semantic ID
-                        webArchSeries = "nam_" + str(collection[1]) + "-" + str(collection[10])
+                        webArchSeries = "series" + str(collection[1]) + "-" + str(collection[10])
 
                         #Add Web Archives not in <phystech>
                         if fa.find("archdesc/phystech") is None:
                                 phystech = ET.Element("phystech")
                                 phystechP = ET.SubElement(phystech, "p")
-                                phystechP.text = "Web Archives"
-                                fa.find("archdesc").insert(1, phystech)
-
-                        #for debugging:
-                        #print "Series " + webArchSeries
+                                phystechP.set("id", "webarch")
+                                phystechP.text = "The records in the Web Archives Series were collected using the Archive-It Web Archiving tool."
+                                fa.find("archdesc/descgrp").insert(1, phystech)
+                        print "Series " + webArchSeries
                         
                         #find or create Web Archvies Series
                         if fa.find("archdesc/dsc") is None:
