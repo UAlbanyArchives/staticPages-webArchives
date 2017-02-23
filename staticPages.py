@@ -6,7 +6,6 @@ from operator import itemgetter
 import os
 import copy
 import requests
-import datetime
 
 
 #lxml parser for parsing XML files from strings
@@ -57,7 +56,6 @@ for collection in collections:
                 print "looking for web archives captures for collection  " + str(collection[1])
                 archiveIt = False
                 wayback = False
-                changes = False
                 requestURL = "http://wayback.archive-it.org/" + archiveItCollection + "/timemap/cdx?url=" + webUrl
                 #for debugging:
                 print requestURL
@@ -153,14 +151,12 @@ for collection in collections:
                                 phystechP.text = "The records in the Web Archives Series were collected using the Archive-It Web Archiving tool."
                                 fa.find("archdesc/descgrp").insert(1, phystech)
                                 print "New Phystech element created"
-                                changes = True
                         elif fa.find('archdesc/descgrp/phystech/p[@id="webarch"]') is None:
                                 phystech = fa.find("archdesc/descgrp/phystech")
                                 phystechP = ET.SubElement(phystech, "p")
                                 phystechP.set("id", "webarch")
                                 phystechP.text = "The records in the Web Archives Series were collected using the Archive-It Web Archiving tool."
                                 print "Web Archives paragraph added to phystech"
-                                changes = True
                         else:
                                 print "Web Archives present and accounted for"
                         
@@ -174,7 +170,6 @@ for collection in collections:
                                 series = ET.Element("c01")
                                 series.set("id", webArchSeries)
                                 dsc.append(series)
-                                
                         else:
                                 match = False
                                 for series in fa.find("archdesc/dsc/c01[@otherlevel='processed']"):
@@ -185,7 +180,6 @@ for collection in collections:
                                         newSeries = ET.Element("c02")
                                         newSeries.set("id", webArchSeries)
                                         fa.find("archdesc/dsc/c01[@otherlevel='processed']").append(newSeries)
-                                        
 
                         #iterate though EAD and find matching series
                         for series in fa.find("archdesc/dsc/c01[@otherlevel='processed']"):
@@ -305,20 +299,8 @@ for collection in collections:
                                                         wayDao.set("show", "new")
                                                         wayDao.set("href", "https://web.archive.org/web/*/" + webUrl)
                                                         series.append(wayFile)
-                                                
-                
-                                now = datetime.datetime.now().isoformat()
-                                now = now[:10]
-                                Revision = fa.find("revisiondesc")
-                                Change = ET.element("change")
-                                Change.set("encodinganalog", "583")
-                                Date = ET.subelement(Change, "date")
-                                Date.set("normal", str(now))
-                                Date.text(str(makeDate(now)))
-                                Item = ET.subelement(Change, "item")
-                                Item.text("The Web Archives script updated this finding aid to reflect new captures. Changes were made to phystech and the contents list (Series " + WebArchSeries + ").")
-                                Change.append(Revision)
-                                        
+                        
+                                                               
                         faString = ET.tostring(fa, pretty_print=True, xml_declaration=True, encoding="utf-8")
                         faFile = open(eadFile, "w")
                         faFile.write(faString)
