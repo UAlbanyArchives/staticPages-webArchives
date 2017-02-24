@@ -6,6 +6,7 @@ from operator import itemgetter
 import os
 import copy
 import requests
+import datetime
 
 
 #lxml parser for parsing XML files from strings
@@ -50,6 +51,7 @@ def makeDate(stamp):
         ###################################################################################
 #Archive-It CDX API request
 for collection in collections:
+        
         try:
                 webUrl = str(collection[12])
                 archiveItCollection = str(collection[11])
@@ -139,7 +141,7 @@ for collection in collections:
                         eadFile = os.path.join(faDir, str(collection[1]) + ".xml")
                         faInput = ET.parse(eadFile, parser)
                         fa = faInput.getroot()
-                        
+                       
                         #Get Web Archvies Series Semantic ID
                         webArchSeries = "web series" + str(collection[10])
 
@@ -159,8 +161,10 @@ for collection in collections:
                                 print "Web Archives paragraph added to phystech"
                         else:
                                 print "Web Archives present and accounted for"
-                        
+                                                        
                         print "Series " + webArchSeries
+                        
+                                   
                         
                         #find or create Web Archvies Series
                         if fa.find("archdesc/dsc") is None:
@@ -244,6 +248,14 @@ for collection in collections:
                                                         if archiveItCollection == "3368":
                                                                 acqP2.text = "Web records from UWM are collected on a semi-annual basis. Crawls of the UWM Web Site may be performed at more frequent intervals in cases of major events, significant additions or changes to the UWM Website or the websites of schools and colleges, etc. Social Media feeds are crawled on an as-requested basis."
                                                         series.insert(1, acqinfo)
+                                                if not series.find("scopecontent") is None:
+                                                        series.remove(series.find("scopecontent"))
+                                                if series.find("scopecontent") is None:
+                                                        SC = ET.Element("scopecontent")
+                                                        SCP = ET.SubElement(SC, "p")
+                                                        SCP.text = str(collection[9])
+                                                        series.insert(1, SC)
+                                                        print "Added Scope/Content Note!"
                                                         
                                                 #remove existing web archives links
                                                 for oldc02 in series:
@@ -299,8 +311,8 @@ for collection in collections:
                                                         wayDao.set("show", "new")
                                                         wayDao.set("href", "https://web.archive.org/web/*/" + webUrl)
                                                         series.append(wayFile)
-                        
-                                                               
+                                                        
+                                                                                              
                         faString = ET.tostring(fa, pretty_print=True, xml_declaration=True, encoding="utf-8")
                         faFile = open(eadFile, "w")
                         faFile.write(faString)
