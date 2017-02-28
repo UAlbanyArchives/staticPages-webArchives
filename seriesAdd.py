@@ -143,7 +143,8 @@ for collection in collections:
                 fa = faInput.getroot()
                
                 #Get Web Archvies Series Semantic ID
-                webArchSeries = "web series" + str(collection[10])
+                webArchSeries = "series" + str(collection[10])
+                webArchSub = "subseries" + str(collection[8])
 
                 now = datetime.date.today()
                 newchange = ET.Element("change")
@@ -152,31 +153,12 @@ for collection in collections:
                 changedate.set("normal", now.isoformat())
                 changedate.text = now.strftime("%B %d, %Y")
                 changeitem = ET.SubElement(newchange, "item")
-                changeitem.text = "Testing testing"
+                changeitem.text = "Brad Houston updated the finding aid to reflect addition of new web URLs(" + webArchSeries +", " + webArchSub +")."
                 fa.find(".//revisiondesc").insert(0,newchange)
-                
-                #Add Web Archives not in <phystech>
-                if fa.find("archdesc/descgrp/phystech") is None:
-                        phystech = ET.Element("phystech")
-                        phystechP = ET.SubElement(phystech, "p")
-                        phystechP.set("id", "webarch")
-                        phystechP.text = "The records in the Web Archives Series were collected using the Archive-It Web Archiving tool."
-                        fa.find("archdesc/descgrp").insert(1, phystech)
-                        print "New Phystech element created"
-                elif fa.find('archdesc/descgrp/phystech/p[@id="webarch"]') is None:
-                        phystech = fa.find("archdesc/descgrp/phystech")
-                        phystechP = ET.SubElement(phystech, "p")
-                        phystechP.set("id", "webarch")
-                        phystechP.text = "The records in the Web Archives Series were collected using the Archive-It Web Archiving tool."
-                        print "Web Archives paragraph added to phystech"
-                else:
-                        print "Web Archives present and accounted for"
-                                                
-                print "Series " + webArchSeries
-                
+                              
                            
                 
-                #find or create Web Archvies Series
+             #find or create Web Archvies Series
                 if fa.find("archdesc/dsc") is None:
                         print "creating web archives series"
                         dsc = ET.Element("dsc")
@@ -186,22 +168,22 @@ for collection in collections:
                         dsc.append(series)
                 else:
                         match = False
-                        for series in fa.find("archdesc/dsc/c01[@otherlevel='processed']"):
-                                if series.tag == "c02":
-                                        if series.attrib["id"] == webArchSeries:
+                        for series in fa.find("archdesc/dsc/c01[@otherlevel='processed']/c02[@id='series2']"):
+                                if series.tag == "c03":
+                                        if series.attrib["id"] == webArchSub:
                                                 match = True
                         if match == False:
-                                newSeries = ET.Element("c02")
-                                newSeries.set("id", webArchSeries)
-                                fa.find("archdesc/dsc/c01[@otherlevel='processed']").append(newSeries)
+                                newSeries = ET.Element("c03")
+                                newSeries.set("id", webArchSub)
+                                fa.find("archdesc/dsc/c01[@otherlevel='processed']/c02[@id='series2']").append(newSeries)
 
                 #iterate though EAD and find matching series
-                for series in fa.find("archdesc/dsc/c01[@otherlevel='processed']"):
-                        if series.tag == "c02":
-                                if series.attrib["id"] == webArchSeries:
+                for series in fa.find("archdesc/dsc/c01[@otherlevel='processed']/c02[@id='series2']"):
+                        if series.tag == "c03":
+                                if series.attrib["id"] == webArchSub:
                                         #for debugging:
                                         print "found series"
-                                        series.set("level", "series")\
+                                        series.set("level", "file")\
                                         #find or create <did>
                                         if series.find("did") is None:
                                                 did = ET.Element("did")
@@ -209,12 +191,12 @@ for collection in collections:
                                         #find or create <unitid>
                                         if series.find("did/unitid") is None:
                                                 unitid = ET.Element("unitid")
-                                                unitid.text = "series" + str(collection[10])
+                                                unitid.text = "subseries" + str(collection[8])
                                                 series.find("did").insert(0, unitid)
                                         #update <unittitle>
                                         if series.find("did/unittitle") is None:
                                                 unittitle = ET.Element("unittitle")
-                                                unittitle.text =str(collection[10]) + ". Web Archives"
+                                                unittitle.text =str(collection[7])
                                                 series.find("did").insert(1, unittitle)
                                         #remove existing <unitdate>s
                                         if not series.find("did/unitdate") is None:
@@ -235,43 +217,11 @@ for collection in collections:
                                         extentElement.set("unit", "captures")
                                         physdescElement.append(extentElement)
                                         series.find("did").append(physdescElement)
-                                        #remove existing <phystech>
-                                        if not series.find("phystech") is None:
-                                                series.remove(series.find("phystech"))
-                                        #add new <phystech>
-                                        if series.find("phystech") is None:
-                                                phystech = ET.Element("phystech")
-                                                phystechP = ET.SubElement(phystech, "p")
-                                                phystechP.text = "Web Archives collected by the Internet Archives Wayback Machine and Archive-It Web Harvesting Tools."
-                                                series.insert(1, phystech)
-                                        #remove existing <acqinfo>
-                                        if not series.find("acqinfo") is None:
-                                                series.remove(series.find("acqinfo"))
-                                        #add new <acqinfo>
-                                        if series.find("acqinfo") is None:
-                                                acqinfo = ET.Element("acqinfo")
-                                                acqP1 = ET.SubElement(acqinfo, "p")
-                                                acqP2 = ET.SubElement(acqinfo, "p")
-                                                #default <acqinfo> text
-                                                acqP1.text = "Web crawling is managed through the Internet Archive's Archive-It service. This series includes links to both the university's collection and the Internet Archive's public collection."
-                                                #uwm.edu <acqinfo> text
-                                                if archiveItCollection == "3368":
-                                                        acqP2.text = "Web records from UWM are collected on a semi-annual basis. Crawls of the UWM Web Site may be performed at more frequent intervals in cases of major events, significant additions or changes to the UWM Website or the websites of schools and colleges, etc. Social Media feeds are crawled on an as-requested basis."
-                                                if archiveItCollection == "4389":
-                                                        acqP2.text = "The Web records of SAA are collected on a semi-annual basis by UWM as part of their committment as custodians of the SAA archives. These archives in many cases constitute the official record of the groups to which they pertain. For more information, consult SAA's Records Retention Policy (2014)."
-                                                series.insert(1, acqinfo)
-                                        if not series.find("scopecontent") is None:
-                                                series.remove(series.find("scopecontent"))
-                                        if series.find("scopecontent") is None:
-                                                SC = ET.Element("scopecontent")
-                                                SCP = ET.SubElement(SC, "p")
-                                                SCP.text = str(collection[9])
-                                                series.insert(1, SC)
-                                                print "Added Scope/Content Note!"
+                                       
                                                 
                                         #remove existing web archives links
                                         for oldc02 in series:
-                                                if oldc02.tag == "c03":
+                                                if oldc02.tag == "c04":
                                                         series.remove(oldc02)
                                         #variable to make new semantic IDs
                                         idCount = 0
@@ -279,7 +229,7 @@ for collection in collections:
                                         #Make Archive-it <c03>
                                         if archiveIt == True:
                                                 idCount = idCount + 1
-                                                aiFile = ET.Element("c03")
+                                                aiFile = ET.Element("c04")
                                                 aiFile.set("id", webArchSeries + "_" + str(idCount))
                                                 aiDid = ET.SubElement(aiFile, "did")
                                                 aiContainer = ET.SubElement(aiDid, "container")
@@ -304,7 +254,7 @@ for collection in collections:
                                         #add general Wayback <c03>
                                         if wayback == True:
                                                 idCount = idCount + 1
-                                                wayFile = ET.Element("c03")
+                                                wayFile = ET.Element("c04")
                                                 wayFile.set("id", webArchSeries + "_" + str(idCount))
                                                 wayDid = ET.SubElement(wayFile, "did")
                                                 wayContainer = ET.SubElement(wayDid, "container")
@@ -329,11 +279,3 @@ for collection in collections:
                 faFile = open(eadFile, "w")
                 faFile.write(faString)
                 faFile.close()
-
-
-###################################################################################	
-#End Web Archives Section
-###################################################################################
-
-
-                
