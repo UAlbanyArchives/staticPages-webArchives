@@ -143,7 +143,7 @@ for collection in collections:
                 fa = faInput.getroot()
                
                 #Get Web Archvies Series Semantic ID
-                webArchSeries = "web series" + str(collection[10])
+                webArchSeries = "series" + str(collection[10])
                 webArchSub = "subseries" + str(collection[8])
                 
                 now = datetime.date.today()
@@ -319,6 +319,14 @@ for collection in collections:
                                                         series.append(wayFile)
 
                 elif collection[6] == 2:
+                       if fa.find("archdesc/dsc/c01[@otherlevel='processed']/c02[@id='" + str(webArchSeries) + "']") is not None:
+                               newSeries = ET.Element("c02")
+                               newSeries.set("id", webArchSeries)
+                               did = ET.SubElement(newSeries, "did")
+                               unittitle = ET.SubElement(did, "unittitle")
+                               unittitle.text = str(collection[10]) +". Web Archives"                                                        
+                               fa.find("archdesc/dsc/c01[@otherlevel='processed']").append(newSeries)
+                               
                        match = False                      
                        for series in fa.find("archdesc/dsc/c01[@otherlevel='processed']/c02[@id='" + str(webArchSeries) + "']"):
                                if series.tag == "c03":
@@ -382,7 +390,7 @@ for collection in collections:
                                                if archiveIt == True:
                                                        idCount = idCount + 1
                                                        aiFile = ET.Element("c04")
-                                                       aiFile.set("id", webArchSeries + "_" + str(idCount))
+                                                       aiFile.set("id", webArchSub + "_" + str(idCount))
                                                        aiDid = ET.SubElement(aiFile, "did")
                                                        aiContainer = ET.SubElement(aiDid, "container")
                                                        aiContainer.set("type", "Web-Archive")
@@ -407,7 +415,7 @@ for collection in collections:
                                                if wayback == True:
                                                        idCount = idCount + 1
                                                        wayFile = ET.Element("c04")
-                                                       wayFile.set("id", webArchSeries + "_" + str(idCount))
+                                                       wayFile.set("id", webArchSub + "_" + str(idCount))
                                                        wayDid = ET.SubElement(wayFile, "did")
                                                        wayContainer = ET.SubElement(wayDid, "container")
                                                        wayContainer.set("type", "Web-Archive")
