@@ -1,6 +1,6 @@
 # UWM Web Archives EAD update code
 
-This is, as shown below, a fork of the University of Albany's code to generate subject and collection pages for their web archives collections. 
+This is, as shown below, a fork of the University of Albany's code to generate subject and collection pages for their web archives collections. (My infinite gratitude to Greg for sharing this code with the community via the Archive-It blog.)
 
 Since I am basically an amateur at this, I have eliminated the sections of code that make updates to HTML and am focusing on updates to EAD only.
 
