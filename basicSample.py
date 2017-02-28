@@ -2,14 +2,14 @@ import requests
 
 requestURL = "http://wayback.archive-it.org/3308/timemap/cdx?url=http://www.albany.edu/history/course-descriptions.shtml"
 
-response = requests.get(requestURL)
+response = requests.get("http://wayback.archive-it.org/3308/timemap/cdx?url=http://www.albany.edu/history/course-descriptions.shtml")
 responseText  = response.text
 
 #variable to count number of captures:
 aiCount = 0
 #if lenght of HTTP response is greater than 5, aribitrary value to check for any captures
 if len(responseText) < 5:
-	print "ERROR: no captures found for " requestURL
+	print "ERROR: no captures found for "
 	
 	responseLines = responseText.split("\n")
 	firstPage = responseLines[0]
