@@ -1,6 +1,10 @@
 # staticPages-webArchives
 Python scripts to generate static navigation pages from collection list and insert Web Archives records using the Archive-It CDX
 
+
+#### This project is no longer actively maintained, see [describingWebArchives](https://github.com/UAlbanyArchives/describingWebArchives) for the current project
+
+
 There are three scripts here:
 
 
